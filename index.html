@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arctic - Roblox Script Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:      #08080A;
+    --charcoal:   #111116;
+    --dark:       #19191F;
+    --mid:        #25252E;
+    --line:       #2E2E3A;
+    --muted:      #5A5A6E;
+    --ghost:      #8A8A9F;
+    --white:      #F0F0F8;
+    --off-white:  #C8C8D8;
+    --blue:       #3D72E8;
+    --blue-dim:   #2255C0;
+    --blue-deep:  #0F2860;
+    --blue-glow:  rgba(61,114,232,0.18);
+    --blue-faint: rgba(61,114,232,0.07);
+    --blue-mid:   rgba(61,114,232,0.12);
+
+    /* tier accent colors */
+    --tier-free:   #4A4A5A;
+    --tier-sub:    #2D62D4;
+    --tier-abs:    #1A3FA8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- NAV ---- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(8,8,10,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-logo-mark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--blue);
+    line-height: 1;
+    letter-spacing: -0.5px;
+    filter: drop-shadow(0 0 8px rgba(61,114,232,0.5));
+  }
+
+  .nav-logo-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--ghost);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    background: var(--blue);
+    color: #fff !important;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: #5588F8 !important; color: #fff !important; }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.35;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 100%);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(61,114,232,0.14) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+  .hero-logo-mark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 80px;
+    font-weight: 700;
+    color: var(--blue);
+    line-height: 1;
+    letter-spacing: -2px;
+    filter: drop-shadow(0 0 32px rgba(61,114,232,0.55)) drop-shadow(0 0 60px rgba(61,114,232,0.25));
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: var(--blue-faint);
+    border: 1px solid rgba(61,114,232,0.3);
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span { color: var(--blue); }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--ghost);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    background: var(--blue);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 0 24px rgba(61,114,232,0.3);
+  }
+
+  .btn-primary:hover { background: #5588F8; transform: translateY(-1px); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    background: transparent;
+    color: var(--off-white);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--line);
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--muted); color: var(--white); }
+
+  .hero-platform {
+    margin-top: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- STATS STRIP ---- */
+  .stats-strip {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: var(--charcoal);
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .stat-item {
+    flex: 1;
+    max-width: 220px;
+    padding: 32px 24px;
+    text-align: center;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .stat-value.in-dev {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    background: var(--blue-faint);
+    border: 1px solid rgba(61,114,232,0.25);
+    border-radius: 100px;
+    padding: 4px 12px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ---- SHARED SECTION ---- */
+  section { padding: 96px 48px; }
+
+  .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    color: var(--ghost);
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  /* ---- FEATURES ---- */
+  #features { background: var(--charcoal); }
+
+  .features-header { text-align: center; margin-bottom: 64px; }
+  .features-header .section-sub { margin: 0 auto; }
+
+  .features-accordion {
+    max-width: 720px;
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .feature-item {
+    border-bottom: 1px solid var(--line);
+    background: var(--dark);
+  }
+
+  .feature-item:last-child { border-bottom: none; }
+
+  .feature-trigger {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    transition: background 0.15s;
+  }
+
+  .feature-trigger:hover { background: #1F1F28; }
+  .feature-item.open .feature-trigger { background: #1A1A22; }
+
+  .feature-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 7px;
+    background: var(--blue-faint);
+    border: 1px solid rgba(61,114,232,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .feature-icon svg { width: 16px; height: 16px; }
+
+  .feature-trigger-label {
+    flex: 1;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .feature-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .feature-item.open .feature-chevron { transform: rotate(180deg); }
+
+  .feature-body {
+    display: none;
+    padding: 0 24px 20px 76px;
+    font-size: 13px;
+    color: var(--ghost);
+    line-height: 1.7;
+  }
+
+  .feature-item.open .feature-body { display: block; }
+
+  /* ---- TIERS ---- */
+  #tiers { background: var(--black); }
+
+  .tiers-header { text-align: center; margin-bottom: 64px; }
+  .tiers-header .section-sub { margin: 0 auto; }
+
+  .tiers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 1020px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  .tier-card {
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .tier-card:hover { border-color: var(--muted); }
+
+  .tier-card.featured {
+    border-color: rgba(61,114,232,0.45);
+    box-shadow: 0 0 32px rgba(61,114,232,0.1);
+  }
+
+  .tier-card.featured-top {
+    border-color: rgba(30,70,180,0.6);
+    box-shadow: 0 0 40px rgba(30,70,180,0.15);
+  }
+
+  .tier-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+  }
+
+  .tier-badge.popular {
+    background: rgba(61,114,232,0.15);
+    border: 1px solid rgba(61,114,232,0.35);
+    color: var(--blue);
+  }
+
+  .tier-badge.best {
+    background: rgba(20,50,150,0.25);
+    border: 1px solid rgba(61,114,232,0.5);
+    color: #7EB0FF;
+  }
+
+  .tier-header {
+    padding: 28px 28px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tier-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .tier-name .tier-sub-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .tier-price {
+    margin-top: 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .price-main {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+
+  .price-sub {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .price-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .tier-body { padding: 24px 28px 28px; flex: 1; }
+
+  .tier-features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .tier-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ghost);
+    line-height: 1.5;
+  }
+
+  .tier-feature svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .tier-feature.good svg { color: var(--blue); }
+  .tier-feature.neutral svg { color: var(--muted); }
+
+  .tier-divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 20px 0;
+  }
+
+  .tier-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12px;
+  }
+
+  .tier-stat-row:last-of-type { border-bottom: none; }
+
+  .tier-stat-key { color: var(--muted); }
+
+  .tier-stat-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .tier-stat-val.dim { color: var(--ghost); }
+  .tier-stat-val.blue { color: var(--blue); }
+
+  .btn-tier {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+    margin-top: 20px;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-tier-outline {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ghost);
+  }
+
+  .btn-tier-outline:hover { border-color: var(--muted); color: var(--white); }
+
+  .btn-tier-blue {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 0 18px rgba(61,114,232,0.25);
+  }
+
+  .btn-tier-blue:hover { background: #5588F8; }
+
+  .btn-tier-deep {
+    background: #1A3FA8;
+    color: #A8C4FF;
+  }
+
+  .btn-tier-deep:hover { background: #2050C8; color: #fff; }
+
+  /* ---- HOW IT WORKS ---- */
+  #howto { background: var(--charcoal); }
+
+  .howto-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 40px;
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 32px;
+    position: relative;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step-line {
+    position: absolute;
+    left: 15px;
+    top: 32px;
+    bottom: 0;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .step:last-child .step-line { display: none; }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--dark);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-body { padding-top: 4px; }
+
+  .step-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .step-desc { font-size: 13px; color: var(--ghost); line-height: 1.65; }
+
+  /* mock editor */
+  .editor-mock {
+    background: var(--charcoal);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 40px;
+  }
+
+  .editor-titlebar {
+    padding: 10px 16px;
+    background: var(--dark);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+
+  .editor-filename {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 8px;
+    font-weight: 500;
+  }
+
+  .editor-body { padding: 20px; font-family: 'Consolas', 'Fira Code', monospace; font-size: 12.5px; line-height: 1.8; }
+
+  .ln { color: var(--line); margin-right: 20px; user-select: none; }
+  .kw { color: #7BA7F7; }
+  .fn { color: #9DCEFF; }
+  .str { color: #88C98A; }
+  .cm { color: var(--muted); font-style: italic; }
+  .num { color: #F7C77B; }
+  .var { color: var(--off-white); }
+
+  /* ---- SPECS ---- */
+  #specs { background: var(--black); }
+
+  .specs-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .specs-table { margin-top: 40px; }
+
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    gap: 24px;
+  }
+
+  .spec-row:first-child { border-top: 1px solid var(--line); }
+
+  .spec-key {
+    font-size: 13px;
+    color: var(--ghost);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .spec-key svg { width: 14px; height: 14px; color: var(--muted); }
+
+  .spec-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    text-align: right;
+  }
+
+  .spec-val.chip {
+    background: var(--blue-faint);
+    border: 1px solid rgba(61,114,232,0.25);
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--blue);
+  }
+
+  /* ---- DOWNLOAD ---- */
+  #download { background: var(--charcoal); }
+
+  .download-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .download-cards {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .download-card {
+    background: var(--dark);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: left;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .download-card:hover { border-color: var(--muted); }
+  .download-card.featured { border-color: rgba(61,114,232,0.4); }
+
+  .download-card-header {
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .download-card-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .download-card-sub {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .download-card-body {
+    padding: 18px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .download-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--ghost);
+    margin-bottom: 8px;
+  }
+
+  .download-meta-item svg { width: 12px; height: 12px; color: var(--blue); flex-shrink: 0; }
+
+  .btn-download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: auto;
+    transition: background 0.2s;
+  }
+
+  .btn-download-outline {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ghost);
+  }
+
+  .btn-download-outline:hover { border-color: var(--muted); color: var(--white); }
+
+  .btn-download-blue {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 0 18px rgba(61,114,232,0.25);
+  }
+
+  .btn-download-blue:hover { background: #5588F8; }
+
+  .btn-download-deep {
+    background: #1A3FA8;
+    color: #A8C4FF;
+  }
+
+  .btn-download-deep:hover { background: #2050C8; color: #fff; }
+
+  .purchase-guide {
+    margin-top: 28px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(61, 114, 232, 0.06);
+    text-align: left;
+  }
+
+  .purchase-guide-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+
+  .purchase-guide-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ghost);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .download-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 24px;
+    line-height: 1.6;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    background: var(--dark);
+    border-top: 1px solid var(--line);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-logo-mark {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--blue);
+    filter: drop-shadow(0 0 6px rgba(61,114,232,0.4));
+  }
+
+  .footer-logo-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .footer-copy {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--ghost); }
+  .footer-links svg { width: 13px; height: 13px; }
+
+  /* ---- ANIMATIONS ---- */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInSlideRight {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% {
+      filter: drop-shadow(0 0 32px rgba(61,114,232,0.55)) drop-shadow(0 0 60px rgba(61,114,232,0.25));
+    }
+    50% {
+      filter: drop-shadow(0 0 40px rgba(61,114,232,0.7)) drop-shadow(0 0 80px rgba(61,114,232,0.35));
+    }
+  }
+
+  @keyframes floatingGlow {
+    0%, 100% {
+      transform: translate(-50%, -50%) translateY(0);
+    }
+    50% {
+      transform: translate(-50%, -50%) translateY(-8px);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInFromTop {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes borderGlow {
+    0% {
+      border-color: rgba(61,114,232,0.3);
+      box-shadow: 0 0 12px rgba(61,114,232,0.1);
+    }
+    50% {
+      border-color: rgba(61,114,232,0.6);
+      box-shadow: 0 0 24px rgba(61,114,232,0.2);
+    }
+    100% {
+      border-color: rgba(61,114,232,0.3);
+      box-shadow: 0 0 12px rgba(61,114,232,0.1);
+    }
+  }
+
+  @keyframes rotateIcon {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Apply animations */
+  .hero-logo-mark {
+    animation: fadeInUp 0.8s ease-out, glowPulse 4s ease-in-out infinite;
+    animation-delay: 0.1s;
+  }
+
+  .hero::after {
+    animation: floatingGlow 4s ease-in-out infinite;
+  }
+
+  .hero h1 {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  .hero-sub {
+    animation: fadeInUp 0.8s ease-out 0.3s both;
+  }
+
+  .hero-actions {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+
+  .hero-platform {
+    animation: fadeInUp 0.8s ease-out 0.5s both;
+  }
+
+  .btn-primary, .btn-secondary {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 40px rgba(61,114,232,0.5);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(61,114,232,0.05);
+  }
+
+  .stat-item {
+    animation: scaleIn 0.6s ease-out;
+  }
+
+  .stat-item:nth-child(1) { animation-delay: 0.6s; }
+  .stat-item:nth-child(2) { animation-delay: 0.65s; }
+  .stat-item:nth-child(3) { animation-delay: 0.7s; }
+  .stat-item:nth-child(4) { animation-delay: 0.75s; }
+
+  .stat-item:hover {
+    transform: translateY(-4px);
+    transition: transform 0.3s ease-out;
+  }
+
+  .feature-item {
+    animation: fadeInSlideRight 0.6s ease-out;
+  }
+
+  .feature-item:nth-child(1) { animation-delay: 0s; }
+  .feature-item:nth-child(2) { animation-delay: 0.1s; }
+  .feature-item:nth-child(3) { animation-delay: 0.2s; }
+  .feature-item:nth-child(4) { animation-delay: 0.3s; }
+  .feature-item:nth-child(5) { animation-delay: 0.4s; }
+
+  .feature-trigger:hover {
+    background: rgba(61,114,232,0.05);
+  }
+
+  .feature-icon {
+    transition: all 0.3s ease-out;
+  }
+
+  .feature-trigger:hover .feature-icon {
+    transform: scale(1.1);
+    border-color: rgba(61,114,232,0.4);
+    background: rgba(61,114,232,0.12);
+  }
+
+  .tier-card {
+    animation: scaleIn 0.6s ease-out;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .tier-card:nth-child(1) { animation-delay: 0.8s; }
+  .tier-card:nth-child(2) { animation-delay: 0.85s; }
+  .tier-card:nth-child(3) { animation-delay: 0.9s; }
+
+  .tier-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(61,114,232,0.5);
+    box-shadow: 0 8px 32px rgba(61,114,232,0.15);
+  }
+
+  .tier-card.featured:hover {
+    box-shadow: 0 8px 40px rgba(61,114,232,0.25);
+  }
+
+  .tier-card.featured-top:hover {
+    box-shadow: 0 8px 48px rgba(30,70,180,0.25);
+  }
+
+  .btn-tier {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .btn-tier:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-tier-blue:hover {
+    box-shadow: 0 0 32px rgba(61,114,232,0.4);
+  }
+
+  .download-card {
+    animation: scaleIn 0.6s ease-out;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .download-card:nth-child(1) { animation-delay: 0s; }
+  .download-card:nth-child(2) { animation-delay: 0.1s; }
+  .download-card:nth-child(3) { animation-delay: 0.2s; }
+
+  .download-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(61,114,232,0.5);
+    box-shadow: 0 8px 32px rgba(61,114,232,0.15);
+  }
+
+  .download-card.featured:hover {
+    box-shadow: 0 8px 40px rgba(61,114,232,0.25);
+  }
+
+  .btn-download {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .btn-download:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-download-blue:hover {
+    box-shadow: 0 0 32px rgba(61,114,232,0.4);
+  }
+
+  .nav-logo-mark {
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  .nav-links a {
+    position: relative;
+    transition: all 0.3s ease-out;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--blue);
+    transform: scaleX(0);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: right;
+  }
+
+  .nav-links a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .section-title {
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  .section-eyebrow {
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  .section-sub {
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  .step {
+    animation: fadeInSlideRight 0.6s ease-out;
+  }
+
+  .step:nth-child(1) { animation-delay: 0s; }
+  .step:nth-child(2) { animation-delay: 0.1s; }
+  .step:nth-child(3) { animation-delay: 0.2s; }
+  .step:nth-child(4) { animation-delay: 0.3s; }
+
+  .step-num {
+    transition: all 0.3s ease-out;
+  }
+
+  .step:hover .step-num {
+    transform: scale(1.2);
+    background: rgba(61,114,232,0.15);
+    border-color: rgba(61,114,232,0.4);
+    box-shadow: 0 0 16px rgba(61,114,232,0.2);
+  }
+
+  .spec-row {
+    animation: fadeInSlideRight 0.6s ease-out;
+  }
+
+  .spec-row:nth-child(1) { animation-delay: 0s; }
+  .spec-row:nth-child(2) { animation-delay: 0.1s; }
+  .spec-row:nth-child(3) { animation-delay: 0.2s; }
+  .spec-row:nth-child(4) { animation-delay: 0.3s; }
+  .spec-row:nth-child(5) { animation-delay: 0.4s; }
+  .spec-row:nth-child(6) { animation-delay: 0.5s; }
+
+  .spec-row:hover {
+    background: rgba(61,114,232,0.03);
+  }
+
+  .footer-logo-mark {
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  @media (max-width: 960px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 72px 24px; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .tiers-grid { grid-template-columns: 1fr; max-width: 480px; }
+    .howto-inner, .specs-inner { grid-template-columns: 1fr; gap: 40px; }
+    .stats-strip { flex-wrap: wrap; }
+    .stat-item { min-width: 50%; border-right: none; border-bottom: 1px solid var(--line); }
+    .download-cards { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+  }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="nav-logo-mark">Λ</span>
+    <span class="nav-logo-name">Arctic</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#tiers">Tiers</a></li>
+    <li><a href="#howto">How It Works</a></li>
+    <li><a href="#specs">Specs</a></li>
+    <li><a href="staff.html">Staff</a></li>
+    <li><a href="#download" class="nav-cta">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-logo-mark">Λ</span>
+    <h1><span>A</span>RCTIC</h1>
+    <p class="hero-sub">Arctic is a fast, minimal Lua script editor for Roblox. No bloat, no noise. Three tiers, one tool.</p>
+    <div class="hero-actions">
+      <a href="#download" class="btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Bootstrapper
+      </a>
+      <a href="#tiers" class="btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        View Tiers
+      </a>
+    </div>
+    <div class="hero-platform">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Windows 10 / 11 only
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-value">Free</div>
+    <div class="stat-label">Base tier</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">3</div>
+    <div class="stat-label">Tiers</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">Key-less</div>
+    <div class="stat-label">No key system</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value in-dev">In Dev</div>
+    <div class="stat-label">Script library</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="features-header">
+    <div class="section-eyebrow">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      What you get
+    </div>
+    <h2 class="section-title">Built for scripting. Nothing else.</h2>
+    <p class="section-sub">Every feature in Arctic exists for a reason. No filler, no upsells.</p>
+  </div>
+  <div class="features-accordion">
+
+    <div class="feature-item open">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <span class="feature-trigger-label">Lua / Luau Editor</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">Syntax highlighting and tab management purpose-built for Roblox Luau scripting.</div>
+    </div>
+
+    <div class="feature-item">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <span class="feature-trigger-label">One-click Attach</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">Attach to any Roblox client instantly. Auto-detection means you spend time scripting, not configuring.</div>
+    </div>
+
+    <div class="feature-item">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <span class="feature-trigger-label">Fast Execution</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">Scripts run with minimal latency. No waiting, no reload loops. Speed scales with your tier.</div>
+    </div>
+
+    <div class="feature-item">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <span class="feature-trigger-label">Multi-tab Workspace</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">Keep multiple scripts open at once. Each game, each script, its own tab.</div>
+    </div>
+
+    <div class="feature-item">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <span class="feature-trigger-label">No Key System</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">Open, attach, execute. No key sites, no redirect loops, no waiting. Ever.</div>
+    </div>
+
+    <div class="feature-item">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="2" x2="9" y2="4"/><line x1="15" y1="2" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/><line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="14" x2="22" y2="14"/><line x1="2" y1="9" x2="4" y2="9"/><line x1="2" y1="14" x2="4" y2="14"/></svg>
+        </div>
+        <span class="feature-trigger-label">Lightweight</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">Minimal system footprint. Runs quietly alongside Roblox without competing for resources.</div>
+    </div>
+
+    <div class="feature-item">
+      <button class="feature-trigger" onclick="toggleFeature(this)">
+        <div class="feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <span class="feature-trigger-label">Console Output</span>
+        <svg class="feature-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="feature-body">View print output, errors, and warnings from your scripts in a built-in console panel.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TIERS -->
+<section id="tiers">
+  <div class="tiers-header">
+    <div class="section-eyebrow">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      Tiers
+    </div>
+    <h2 class="section-title">Pick your tier.</h2>
+    <p class="section-sub">Arctic is free. Subzero and Absolute Zero are one-time Roblox gamepass purchases, not subscriptions.</p>
+  </div>
+  <div class="tiers-grid">
+
+    <!-- ARCTIC FREE -->
+    <div class="tier-card">
+      <div class="tier-header">
+        <div class="tier-name">
+          Arctic
+          <span class="tier-sub-label">Free tier</span>
+        </div>
+        <div class="tier-price">
+          <span class="price-main">Free</span>
+        </div>
+        <div class="price-note">No purchase required</div>
+      </div>
+      <div class="tier-body">
+        <ul class="tier-features-list">
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Full Lua / Luau editor access
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            No key system
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Auto-execute, multi-tab, console
+          </li>
+          <li class="tier-feature neutral">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Unprioritized updates
+          </li>
+          <li class="tier-feature neutral">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Slowest injection and execution speed
+          </li>
+        </ul>
+        <hr class="tier-divider">
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">UNC</span>
+          <span class="tier-stat-val dim">Lower</span>
+        </div>
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">sUNC</span>
+          <span class="tier-stat-val dim">Lower</span>
+        </div>
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">Updates</span>
+          <span class="tier-stat-val dim">Unprioritized</span>
+        </div>
+        <a href="#download" class="btn-tier btn-tier-outline">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Free
+        </a>
+      </div>
+    </div>
+
+    <!-- SUBZERO -->
+    <div class="tier-card featured">
+      <div class="tier-badge popular">Popular</div>
+      <div class="tier-header">
+        <div class="tier-name">
+          Arctic: Subzero
+          <span class="tier-sub-label">Paid tier I</span>
+        </div>
+        <div class="tier-price">
+          <span class="price-main">500 R$</span>
+          <span class="price-sub">~ $6.25 USD</span>
+        </div>
+        <div class="price-note">One-time Roblox gamepass</div>
+      </div>
+      <div class="tier-body">
+        <ul class="tier-features-list">
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Everything in Arctic
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Priority updates
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Faster injection and execution speed
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Improved UNC and sUNC
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            One-time purchase, no subscription
+          </li>
+        </ul>
+        <hr class="tier-divider">
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">UNC</span>
+          <span class="tier-stat-val blue">Better</span>
+        </div>
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">sUNC</span>
+          <span class="tier-stat-val blue">Better</span>
+        </div>
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">Updates</span>
+          <span class="tier-stat-val blue">Priority</span>
+        </div>
+        <a href="#download" class="btn-tier btn-tier-blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Get Subzero
+        </a>
+      </div>
+    </div>
+
+    <!-- ABSOLUTE ZERO -->
+    <div class="tier-card featured-top">
+      <div class="tier-badge best">Best</div>
+      <div class="tier-header">
+        <div class="tier-name">
+          Arctic: Absolute Zero
+          <span class="tier-sub-label">Paid tier II</span>
+        </div>
+        <div class="tier-price">
+          <span class="price-main">1,000 R$</span>
+          <span class="price-sub">~ $12.49 USD</span>
+        </div>
+        <div class="price-note">One-time Roblox gamepass</div>
+      </div>
+      <div class="tier-body">
+        <ul class="tier-features-list">
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Everything in Subzero
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Top-priority updates
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Absolute fastest injection and execution
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Highest UNC and sUNC of all tiers
+          </li>
+          <li class="tier-feature good">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            First access to new features
+          </li>
+        </ul>
+        <hr class="tier-divider">
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">UNC</span>
+          <span class="tier-stat-val blue">Highest</span>
+        </div>
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">sUNC</span>
+          <span class="tier-stat-val blue">Highest</span>
+        </div>
+        <div class="tier-stat-row">
+          <span class="tier-stat-key">Updates</span>
+          <span class="tier-stat-val blue">Top Priority</span>
+        </div>
+        <a href="#download" class="btn-tier btn-tier-deep">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Get Absolute Zero
+        </a>
+      </div>
+      
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="howto">
+  <div class="howto-inner">
+    <div>
+      <div class="section-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><polyline points="12 8 12 12 14 14"/></svg>
+        Getting started
+      </div>
+      <h2 class="section-title">Up and running in under a minute.</h2>
+      <p class="section-sub">No dependencies to hunt down. No configuration files to edit.</p>
+      <div class="steps-list">
+        <div class="step">
+          <div class="step-line"></div>
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">Download Arctic</div>
+            <div class="step-desc">Grab the latest bootstrapper and install Arctic in a couple of clicks.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"></div>
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">Launch Roblox</div>
+            <div class="step-desc">Open any Roblox game using the standard client, Bloxstrap, or Fishstrap.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"></div>
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">Run Arctic and attach</div>
+            <div class="step-desc">Open Arctic.exe. Hit the attach button. Arctic detects the running client automatically.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">Write and execute</div>
+            <div class="step-desc">Paste or write your Lua script in the editor. Press execute and watch it run.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="margin-top:48px;">
+        <div class="editor-mock">
+          <div class="editor-titlebar">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <span class="editor-filename">script.lua</span>
+          </div>
+          <div class="editor-body">
+            <div><span class="ln">1</span><span class="cm">-- arctic script editor</span></div>
+            <div><span class="ln">2</span></div>
+            <div><span class="ln">3</span><span class="kw">local</span> <span class="var">Players</span> <span class="kw">=</span> <span class="fn">game</span><span class="var">:GetService(</span><span class="str">"Players"</span><span class="var">)</span></div>
+            <div><span class="ln">4</span><span class="kw">local</span> <span class="var">lp</span> <span class="kw">=</span> <span class="var">Players.LocalPlayer</span></div>
+            <div><span class="ln">5</span><span class="kw">local</span> <span class="var">char</span> <span class="kw">=</span> <span class="var">lp.Character</span></div>
+            <div><span class="ln">6</span></div>
+            <div><span class="ln">7</span><span class="kw">if not</span> <span class="var">char</span> <span class="kw">then</span></div>
+            <div><span class="ln">8</span>&nbsp;&nbsp;<span class="var">char</span> <span class="kw">=</span> <span class="var">lp.CharacterAdded:</span><span class="fn">Wait</span><span class="var">()</span></div>
+            <div><span class="ln">9</span><span class="kw">end</span></div>
+            <div><span class="ln">10</span></div>
+            <div><span class="ln">11</span><span class="kw">local</span> <span class="var">root</span> <span class="kw">=</span> <span class="var">char:WaitForChild(</span><span class="str">"HumanoidRootPart"</span><span class="var">)</span></div>
+            <div><span class="ln">12</span><span class="var">root.CFrame</span> <span class="kw">=</span> <span class="fn">CFrame</span><span class="var">.new(</span><span class="num">0</span><span class="var">,</span> <span class="num">50</span><span class="var">,</span> <span class="num">0</span><span class="var">)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section id="specs">
+  <div class="specs-inner">
+    <div>
+      <div class="section-eyebrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        Requirements
+      </div>
+      <h2 class="section-title">What you need to run Arctic.</h2>
+      <p class="section-sub">Arctic is designed to run well on modest hardware. No GPU requirements, no background services.</p>
+    </div>
+    <div class="specs-table">
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Operating System
+        </div>
+        <div class="spec-val">Windows 10 / 11 (64-bit)</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+          RAM
+        </div>
+        <div class="spec-val">4 GB minimum</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          Storage
+        </div>
+        <div class="spec-val">~50 MB</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          .NET Runtime
+        </div>
+        <div class="spec-val">8.0 or later</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Visual C++
+        </div>
+        <div class="spec-val">Redistributable 2022</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          Internet
+        </div>
+        <div class="spec-val">Required for updates</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-key">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          Mobile / Mac
+        </div>
+        <div class="spec-val chip">Not supported</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <div class="download-inner">
+    <div class="section-eyebrow" style="justify-content:center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download
+    </div>
+    <h2 class="section-title">Ready when you are.</h2>
+    <p class="section-sub" style="margin:0 auto;">Download the base tier for free, or grab a gamepass to unlock Subzero or Absolute Zero.</p>
+    <div class="download-cards">
+
+      <div class="download-card">
+        <div class="download-card-header">
+          <div class="download-card-name">Arctic</div>
+          <div class="download-card-sub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Free
+          </div>
+        </div>
+        <div class="download-card-body">
+          <div class="download-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Bootstrapper installer
+          </div>
+          <div class="download-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Install and launch
+          </div>
+          <a href="#" class="btn-download btn-download-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Bootstrapper
+          </a>
+        </div>
+      </div>
+
+      <div class="download-card featured">
+        <div class="download-card-header">
+          <div class="download-card-name">Arctic: Subzero</div>
+          <div class="download-card-sub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            500 R$ (~$6.25) gamepass
+          </div>
+        </div>
+        <div class="download-card-body">
+          <div class="download-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Priority updates included
+          </div>
+          <div class="download-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Faster speed, better UNC/sUNC
+          </div>
+          <a href="#" class="btn-download btn-download-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Get on Roblox
+          </a>
+        </div>
+      </div>
+
+      <div class="download-card">
+        <div class="download-card-header">
+          <div class="download-card-name">Arctic: Absolute Zero</div>
+          <div class="download-card-sub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            1,000 R$ (~$12.49) gamepass
+          </div>
+        </div>
+        <div class="download-card-body">
+          <div class="download-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Top-priority updates, first to new features
+          </div>
+          <div class="download-meta-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Absolute fastest, highest UNC/sUNC
+          </div>
+          <a href="#" class="btn-download btn-download-deep">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Get on Roblox
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <div class="purchase-guide">
+      <div class="purchase-guide-title">How to purchase</div>
+      <ol class="purchase-guide-list">
+        <li>Purchase the ROBLOX Gamepass</li>
+        <li>Open a ticket in the Discord and send proof of your receipt from roblox + a video of you refreshing transactions</li>
+      </ol>
+    </div>
+    <p class="download-note">
+      Antivirus software may flag the executable due to how script editors interact with game memory. This is a false positive. Verify the file on VirusTotal if you want to confirm before running.
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <span class="footer-logo-mark">Λ</span>
+    <span class="footer-logo-name">Arctic</span>
+  </div>
+  <div class="footer-copy">Windows 10 / 11 only. Not affiliated with Roblox Corporation.</div>
+  <ul class="footer-links">
+    <li>
+      <a href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Discord
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        GitHub
+      </a>
+    </li>
+  </ul>
+</footer>
+
+<script>
+  function toggleFeature(btn) {
+    const item = btn.closest('.feature-item');
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.feature-item').forEach(el => el.classList.remove('open'));
+    // Open clicked one if it wasn't already open
+    if (!isOpen) item.classList.add('open');
+  }
+</script>
+</body>
+</html>
